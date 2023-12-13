@@ -8,6 +8,16 @@ sealed class ProfileState extends Equatable {
   List<Object> get props => [];
 }
 
+final class ProfileFBSuccess extends ProfileState {
+  final String userFBName;
+  const ProfileFBSuccess({required this.userFBName});
+
+  @override
+  List<Object> get props => [userFBName];
+}
+
+final class ProfileFBLoading extends ProfileState {}
+
 final class ProfileInitial extends ProfileState {}
 
 final class ProfileLoading extends ProfileState {}
@@ -23,14 +33,12 @@ final class ProfileSuccess extends ProfileState {
 
 final class ProfileError extends ProfileState {
   const ProfileError({
-    required this.message,
-    required this.peffix,
+    required this.customException,
   });
-  final String message;
-  final String peffix;
+  final CustomException customException;
 
   @override
-  List<Object> get props => [message, peffix];
+  List<Object> get props => [customException];
 }
 
 extension UserHandlingState on ProfileState {

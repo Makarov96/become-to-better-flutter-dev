@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sample_dependecy_inversion/feature/services/param_through_screen/param_through_screen.dart';
+import 'package:sample_dependecy_inversion/feature/services/param_through_screen/params_through_screen_factory.dart';
 import 'package:sample_dependecy_inversion/feature/user/presenter/bloc/bloc/profile_bloc.dart';
+import 'package:sample_dependecy_inversion/feature/user/presenter/screen/screen_user_detail.dart';
 import 'package:sample_dependecy_inversion/packages/device_info/device_info_bloc/device_info_bloc.dart';
 import 'package:sample_dependecy_inversion/packages/device_info/device_info_data.dart';
 import 'package:sample_dependecy_inversion/sl.dart';
@@ -11,19 +14,19 @@ class ScreenUser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            lazy: false,
-            create: (context) =>
-                sl.get<DeviceInfoBloc>()..add(DeviceInfoCall()),
-          )
-        ],
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text('Material App Bar'),
-          ),
-          body: const _LayoutBodyScreenUser(),
-        ));
+      providers: [
+        BlocProvider(
+          lazy: false,
+          create: (context) => sl.get<DeviceInfoBloc>()..add(DeviceInfoCall()),
+        )
+      ],
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Material App Bar'),
+        ),
+        body: const _LayoutBodyScreenUser(),
+      ),
+    );
   }
 }
 
@@ -82,6 +85,33 @@ class _LayoutBodyScreenUser extends StatelessWidget {
             builder: (context, value) {
               return Text(value);
             },
+          ),
+          const Divider(),
+          BlocBuilder<ProfileBloc, ProfileState>(
+            bloc: sl.get<ProfileBloc>()..add(const GetDataFromBackendEvent()),
+            builder: (context, state) {
+              if (state is ProfileFBSuccess) {
+                return SizedBox(
+                  child: Text(state.userFBName),
+                );
+              } else {
+                return const CircularProgressIndicator();
+              }
+            },
+          ),
+          const Divider(),
+          ElevatedButton(
+            onPressed: () {
+              print(sl.get<ParamsThroughScreen>().userName);
+              print(sl.get<ParamsThroughScreenFactory>().userName);
+              sl.get<ParamsThroughScreen>().userName = 'Steven Colocho';
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const ScreenUserDetail(),
+                ),
+              );
+            },
+            child: const Text('go to details view'),
           )
         ],
       ),

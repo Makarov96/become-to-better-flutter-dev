@@ -10,3 +10,7 @@ sealed class ProfileEvent extends Equatable {
 class ProfileInitEvent extends ProfileEvent {
   const ProfileInitEvent();
 }
+
+class GetDataFromBackendEvent extends ProfileEvent {
+  const GetDataFromBackendEvent();
+}
