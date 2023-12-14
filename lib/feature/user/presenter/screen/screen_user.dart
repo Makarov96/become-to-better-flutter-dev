@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sample_dependecy_inversion/feature/services/param_through_screen/param_through_screen.dart';
-import 'package:sample_dependecy_inversion/feature/services/param_through_screen/params_through_screen_factory.dart';
 import 'package:sample_dependecy_inversion/feature/user/presenter/bloc/bloc/profile_bloc.dart';
 import 'package:sample_dependecy_inversion/feature/user/presenter/screen/screen_user_detail.dart';
 import 'package:sample_dependecy_inversion/packages/device_info/device_info_bloc/device_info_bloc.dart';
 import 'package:sample_dependecy_inversion/packages/device_info/device_info_data.dart';
+import 'package:sample_dependecy_inversion/packages/internet_conection/internet_conection.dart';
 import 'package:sample_dependecy_inversion/sl.dart';
 
 class ScreenUser extends StatelessWidget {
@@ -102,13 +102,14 @@ class _LayoutBodyScreenUser extends StatelessWidget {
           const Divider(),
           ElevatedButton(
             onPressed: () {
-              print(sl.get<ParamsThroughScreen>().userName);
-              print(sl.get<ParamsThroughScreenFactory>().userName);
-              sl.get<ParamsThroughScreen>().userName = 'Steven Colocho';
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const ScreenUserDetail(),
-                ),
+              sl.get<InternetGuard>()(
+                checker: (value) {
+                  if (value) {
+                    action(context: context);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  }
+                },
               );
             },
             child: const Text('go to details view'),
@@ -117,4 +118,21 @@ class _LayoutBodyScreenUser extends StatelessWidget {
       ),
     );
   }
+
+  void action({required BuildContext context}) {
+    sl.get<ParamsThroughScreen>().userName = 'Steven Colocho';
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const ScreenUserDetail(),
+      ),
+    );
+  }
 }
+
+const snackBar = SnackBar(
+  content: Text('Yay! No tienes internet!'),
+);
+
+const snackBarSuccess = SnackBar(
+  content: Text('Yay! ya tienes internet!'),
+);

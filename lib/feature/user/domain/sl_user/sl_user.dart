@@ -6,7 +6,7 @@ import 'package:sample_dependecy_inversion/sl.dart';
 class SLUser {
   static init() {
     sl.registerLazySingleton<ProfileRepository>(
-      () => ApiDataSource(),
+      () => ApiDataSource(internetGuard: sl()),
     );
     sl.registerFactory<ProfileBloc>(
       () => ProfileBloc(repository: sl()),
